@@ -1,0 +1,6 @@
+@OilfieldDashboard_HostAddress = http://localhost:5039
+
+GET {{OilfieldDashboard_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
