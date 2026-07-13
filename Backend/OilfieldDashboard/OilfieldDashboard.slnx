@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="OilfieldDashboard/OilfieldDashboard.csproj" />
+  <Project Path="OilfieldDashboard.Application/OilfieldDashboard.Application.csproj" />
+  <Project Path="OilfieldDashboard.Domain/OilfieldDashboard.Domain.csproj" />
+  <Project Path="OilfieldDashboard.Infrastructure/OilfieldDashboard.Infrastructure.csproj" />
 </Solution>

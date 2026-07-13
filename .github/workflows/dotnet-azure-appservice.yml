@@ -1,0 +1,53 @@
+name: Build & Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  PROJECT_PATH: 'Backend/OilfieldDashboard/OilfieldDashboard/OilfieldDashboard.csproj'
+  PUBLISH_DIR: './publish'
+  AZURE_WEBAPP_NAME: 'oilfield-dashboard-api'   # ← Change this to your Azure App Service name
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up .NET SDK
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # 3. Restore NuGet packages
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      # 4. Build in Release mode
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      # 5. Run tests (if any test projects are added later)
+      # - name: Test
+      #   run: dotnet test --no-build --verbosity normal
+
+      # 6. Publish the app
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.PUBLISH_DIR }} --no-build
+
+      # 7. Deploy to Azure App Service
+      #    Requires AZURE_WEBAPP_PUBLISH_PROFILE secret set in GitHub repository settings
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.PUBLISH_DIR }}
