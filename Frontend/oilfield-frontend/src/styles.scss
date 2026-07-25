@@ -1,1 +1,30 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --bg: #10151b;
+  --panel: #1a222b;
+  --border: #2b3742;
+  --text: #e7ecef;
+  --text-muted: #8a98a6;
+  --status-active: #3ecf8e;
+  --status-maintenance: #f0a93b;
+  --status-inactive: #6b7785;
+  --accent: #f0a93b;
+
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}

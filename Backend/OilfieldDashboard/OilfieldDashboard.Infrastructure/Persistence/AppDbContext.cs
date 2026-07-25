@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using OilfieldDashboard.Application.Interfaces;
 using OilfieldDashboard.Domain.Entities;
 
 namespace OilfieldDashboard.Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IApplicationDbContext
+
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

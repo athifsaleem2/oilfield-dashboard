@@ -1,1 +1,50 @@
-<p>well-list works!</p>
+<div class="well-list-container">
+  <div class="header">
+    <h2>Wells</h2>
+    <a routerLink="/wells/new" class="btn-primary">+ Add Well</a>
+  </div>
+
+  @if (loading) {
+    <p>Loading wells...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+
+  <div class="well-map-frame">
+    <div id="well-map" class="well-map"></div>
+  </div>
+
+  <table class="well-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (well of wells; track well.id) {
+        <tr>
+          <td>{{ well.name }}</td>
+          <td>{{ well.location }}</td>
+          <td>
+            <span class="status-light" [class]="statusLabel(well.status).toLowerCase()">
+              {{ statusLabel(well.status) }}
+            </span>
+          </td>
+          <td class="coord">{{ well.latitude.toFixed(4) }}</td>
+          <td class="coord">{{ well.longitude.toFixed(4) }}</td>
+          <td>
+            <a [routerLink]="['/wells', well.id, 'edit']">Edit</a>
+            <button (click)="deleteWell(well.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

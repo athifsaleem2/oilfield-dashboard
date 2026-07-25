@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace OilfieldDashboard.Domain.Entities
 {
     public class Well
@@ -9,6 +6,8 @@ namespace OilfieldDashboard.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public WellStatus Status { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public ICollection<SensorReading> SensorReadings { get; set; } = new List<SensorReading>();
     }
 

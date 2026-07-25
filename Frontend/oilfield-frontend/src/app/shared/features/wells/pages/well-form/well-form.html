@@ -1,1 +1,57 @@
-<p>well-form works!</p>
+<div class="well-form-container">
+  <h2>{{ isEditMode ? 'Edit Well' : 'Create Well' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-field">
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <span class="error">Name is required (max 200 characters).</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="location">Location</label>
+      <input id="location" type="text" formControlName="location" />
+      @if (form.get('location')?.invalid && form.get('location')?.touched) {
+        <span class="error">Location is required (max 300 characters).</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="status">Status</label>
+     <select id="status" formControlName="status">
+  @for (option of statusOptions; track option.value) {
+    <option [ngValue]="option.value">{{ option.label }}</option>
+  }
+</select>
+    </div>
+
+    <div class="form-field">
+      <label for="latitude">Latitude</label>
+      <input id="latitude" type="number" step="0.0001" formControlName="latitude" />
+      @if (form.get('latitude')?.invalid && form.get('latitude')?.touched) {
+        <span class="error">Latitude must be between -90 and 90.</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="longitude">Longitude</label>
+      <input id="longitude" type="number" step="0.0001" formControlName="longitude" />
+      @if (form.get('longitude')?.invalid && form.get('longitude')?.touched) {
+        <span class="error">Longitude must be between -180 and 180.</span>
+      }
+    </div>
+
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="submitting">
+        {{ isEditMode ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

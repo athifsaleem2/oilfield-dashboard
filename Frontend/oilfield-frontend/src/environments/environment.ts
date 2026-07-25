@@ -1,4 +1,4 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.oilfield.com'
+  production: false,
+  apiUrl: 'https://localhost:44360/api',
 };
