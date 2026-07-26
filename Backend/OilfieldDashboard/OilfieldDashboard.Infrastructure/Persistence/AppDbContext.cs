@@ -5,13 +5,13 @@ using OilfieldDashboard.Domain.Entities;
 namespace OilfieldDashboard.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext, IApplicationDbContext
-
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Well> Wells => Set<Well>();
         public DbSet<SensorReading> SensorReadings => Set<SensorReading>();
         public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
+        public DbSet<Alert> Alerts => Set<Alert>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,12 @@ namespace OilfieldDashboard.Infrastructure.Persistence
                 .HasOne(wo => wo.Well)
                 .WithMany()
                 .HasForeignKey(wo => wo.WellId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Alert>()
+                .HasOne(a => a.Well)
+                .WithMany()
+                .HasForeignKey(a => a.WellId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

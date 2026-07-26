@@ -1,1 +1,57 @@
-<p>alert-list works!</p>
+<div class="alert-list-container">
+  <header class="page-header">
+    <h1>Alerts</h1>
+    <p>{{ activeCount() }} active alert{{ activeCount() === 1 ? '' : 's' }}</p>
+  </header>
+
+  @if (loading()) {
+    <p class="waiting">Loading alerts...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (!loading() && alerts().length === 0) {
+    <p class="empty">No alerts recorded.</p>
+  }
+
+  <table class="alert-table">
+    <thead>
+      <tr>
+        <th>Well</th>
+        <th>Metric</th>
+        <th>Value</th>
+        <th>Threshold</th>
+        <th>Message</th>
+        <th>Created</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (alert of alerts(); track alert.id) {
+        <tr [class.resolved]="alert.isResolved">
+          <td>{{ alert.wellName }}</td>
+          <td>{{ alert.metric }}</td>
+          <td class="coord">{{ alert.value }}</td>
+          <td class="coord">{{ alert.threshold }}</td>
+          <td>{{ alert.message }}</td>
+          <td class="coord">{{ alert.createdAt | date:'medium' }}</td>
+          <td>
+            @if (alert.isResolved) {
+              <span class="status-light inactive">Resolved</span>
+            } @else {
+              <span class="status-light active">Active</span>
+            }
+          </td>
+          <td>
+            @if (!alert.isResolved) {
+              <button (click)="resolve(alert.id)">Resolve</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

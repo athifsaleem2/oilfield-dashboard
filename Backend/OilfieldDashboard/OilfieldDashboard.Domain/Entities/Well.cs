@@ -8,6 +8,9 @@ namespace OilfieldDashboard.Domain.Entities
         public WellStatus Status { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public double MaxPressure { get; set; } = 2450;
+        public double MaxTemperature { get; set; } = 190;
+        public double MinFlowRate { get; set; } = 150;
         public ICollection<SensorReading> SensorReadings { get; set; } = new List<SensorReading>();
     }
 

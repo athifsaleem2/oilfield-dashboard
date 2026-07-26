@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, Inject, signal, computed } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { LiveMonitorService } from '../../services/live-monitor';
 import { SensorReading } from '../../sensor-reading.model';
 
@@ -27,39 +27,67 @@ const THRESHOLDS: Record<MetricKey, Thresholds> = {
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, OnDestroy {
-  wellReadings = new Map<number, SensorReading[]>();
+  private _wellReadings = new Map<number, SensorReading[]>();
+  private _wellsWithAlerts = new Set<number>();
+
+  /** Signals to trigger re-render */
+  wellIds = signal<number[]>([]);
+  wellsWithAlertsSignal = signal<Set<number>>(new Set());
+  wellReadingsSignal = signal<Map<number, SensorReading[]>>(new Map());
+
   metricKeys: MetricKey[] = ['pressure', 'temperature', 'flowRate'];
-  private subscription: any;
+  private readingsSub: any;
+  private alertsSub: any;
 
   constructor(
     private liveMonitor: LiveMonitorService,
-    private cdr: ChangeDetectorRef
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.liveMonitor.connect();
+    if (!isPlatformBrowser(this.platformId)) return;
 
-    this.subscription = this.liveMonitor.readings$.subscribe((newReadings) => {
+    this.readingsSub = this.liveMonitor.readings$.subscribe((newReadings) => {
+      if (!newReadings || newReadings.length === 0) return;
+
       for (const reading of newReadings) {
-        const existing = this.wellReadings.get(reading.wellId) ?? [];
+        if (!reading || reading.wellId == null) continue;
+        const existing = this._wellReadings.get(reading.wellId) ?? [];
         const updated = [...existing, reading].slice(-MAX_READINGS_PER_WELL);
-        this.wellReadings.set(reading.wellId, updated);
+        this._wellReadings.set(reading.wellId, updated);
       }
-      this.cdr.detectChanges();
+
+      const ids = Array.from(this._wellReadings.keys()).sort((a, b) => a - b);
+      this.wellIds.set(ids);
+      this.wellReadingsSignal.set(new Map(this._wellReadings));
     });
+
+    this.alertsSub = this.liveMonitor.alerts$.subscribe((newAlerts) => {
+      if (!newAlerts) return;
+
+      for (const alert of newAlerts) {
+        if (alert && alert.wellId != null) {
+          this._wellsWithAlerts.add(alert.wellId);
+        }
+      }
+      this.wellsWithAlertsSignal.set(new Set(this._wellsWithAlerts));
+    });
+
+    await this.liveMonitor.connect();
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.readingsSub?.unsubscribe();
+    this.alertsSub?.unsubscribe();
     this.liveMonitor.disconnect();
   }
 
-  get wellIds(): number[] {
-    return Array.from(this.wellReadings.keys()).sort((a, b) => a - b);
+  hasAlert(wellId: number): boolean {
+    return this.wellsWithAlertsSignal().has(wellId);
   }
 
   latest(wellId: number): SensorReading | undefined {
-    const readings = this.wellReadings.get(wellId);
+    const readings = this.wellReadingsSignal().get(wellId);
     return readings?.[readings.length - 1];
   }
 
@@ -82,7 +110,6 @@ export class Dashboard implements OnInit, OnDestroy {
     return 'normal';
   }
 
-  // Smooth curve using quadratic bezier midpoint smoothing
   private smoothPath(points: { x: number; y: number }[]): string {
     if (points.length < 2) return '';
     let d = `M ${points[0].x},${points[0].y}`;
@@ -97,7 +124,7 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   private computePoints(wellId: number, key: MetricKey): { x: number; y: number }[] {
-    const readings = this.wellReadings.get(wellId) ?? [];
+    const readings = this.wellReadingsSignal().get(wellId) ?? [];
     if (readings.length < 2) return [];
 
     const values = readings.map((r) => r[key]);

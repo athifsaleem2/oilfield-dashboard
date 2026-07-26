@@ -22,6 +22,44 @@ namespace OilfieldDashboard.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("OilfieldDashboard.Domain.Entities.Alert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Metric")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Threshold")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.Property<int>("WellId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WellId");
+
+                    b.ToTable("Alerts");
+                });
+
             modelBuilder.Entity("OilfieldDashboard.Domain.Entities.SensorReading", b =>
                 {
                     b.Property<int>("Id")
@@ -70,6 +108,15 @@ namespace OilfieldDashboard.Infrastructure.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
+                    b.Property<double>("MaxPressure")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxTemperature")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinFlowRate")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -90,6 +137,10 @@ namespace OilfieldDashboard.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AssignedTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -101,8 +152,15 @@ namespace OilfieldDashboard.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("WellId")
                         .HasColumnType("int");
@@ -112,6 +170,17 @@ namespace OilfieldDashboard.Infrastructure.Migrations
                     b.HasIndex("WellId");
 
                     b.ToTable("WorkOrders");
+                });
+
+            modelBuilder.Entity("OilfieldDashboard.Domain.Entities.Alert", b =>
+                {
+                    b.HasOne("OilfieldDashboard.Domain.Entities.Well", "Well")
+                        .WithMany()
+                        .HasForeignKey("WellId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Well");
                 });
 
             modelBuilder.Entity("OilfieldDashboard.Domain.Entities.SensorReading", b =>

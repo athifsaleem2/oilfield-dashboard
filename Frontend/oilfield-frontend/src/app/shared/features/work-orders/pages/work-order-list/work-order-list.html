@@ -1,1 +1,55 @@
-<p>work-order-list works!</p>
+<div class="work-order-list-container">
+  <div class="header">
+    <h1>Work Orders</h1>
+    <a routerLink="/work-orders/new" class="btn-primary">+ New Work Order</a>
+  </div>
+
+  @if (loading()) {
+    <p class="waiting">Loading work orders...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (!loading() && workOrders().length === 0) {
+    <p class="empty">No work orders yet.</p>
+  }
+
+  <table class="work-order-table">
+    <thead>
+      <tr>
+        <th>Well</th>
+        <th>Title</th>
+        <th>Assigned To</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (order of workOrders(); track order.id) {
+        <tr>
+          <td>{{ order.wellName }}</td>
+          <td>{{ order.title }}</td>
+          <td>{{ order.assignedTo }}</td>
+          <td class="coord">{{ order.dueDate | date:'mediumDate' }}</td>
+          <td>
+            <span class="status-badge" [class]="statusClass(order.status)">
+              {{ statusLabel(order.status) }}
+            </span>
+          </td>
+          <td class="actions">
+            <a [routerLink]="['/work-orders', order.id, 'edit']">Edit</a>
+            @if (order.status !== 2) {
+              <button class="advance-btn" (click)="advanceStatus(order)">
+                {{ order.status === 0 ? 'Start' : 'Close' }}
+              </button>
+            }
+            <button class="delete-btn" (click)="deleteOrder(order.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

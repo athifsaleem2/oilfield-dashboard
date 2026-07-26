@@ -180,3 +180,26 @@
   color: var(--text-muted);
   font-family: var(--font-mono);
 }
+
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.alert-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: #e5555b;
+  border: 1px solid #e5555b;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  animation: alert-flash 1.4s ease-in-out infinite;
+}
+
+@keyframes alert-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

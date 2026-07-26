@@ -1,1 +1,61 @@
-<p>work-order-form works!</p>
+<div class="work-order-form-container">
+  <h2>{{ isEditMode ? 'Edit Work Order' : 'New Work Order' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-field">
+      <label for="wellId">Well</label>
+      <select id="wellId" formControlName="wellId">
+        <option value="" disabled>Select a well</option>
+        @for (well of wells; track well.id) {
+          <option [ngValue]="well.id">{{ well.name }}</option>
+        }
+      </select>
+      @if (form.get('wellId')?.invalid && form.get('wellId')?.touched) {
+        <span class="error">Well is required.</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="title">Title</label>
+      <input id="title" type="text" formControlName="title" />
+      @if (form.get('title')?.invalid && form.get('title')?.touched) {
+        <span class="error">Title is required.</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="description">Description</label>
+      <textarea id="description" rows="4" formControlName="description"></textarea>
+      @if (form.get('description')?.invalid && form.get('description')?.touched) {
+        <span class="error">Description is required.</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="assignedTo">Assigned To</label>
+      <input id="assignedTo" type="text" formControlName="assignedTo" />
+      @if (form.get('assignedTo')?.invalid && form.get('assignedTo')?.touched) {
+        <span class="error">Assignee is required.</span>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="dueDate">Due Date</label>
+      <input id="dueDate" type="date" formControlName="dueDate" />
+      @if (form.get('dueDate')?.invalid && form.get('dueDate')?.touched) {
+        <span class="error">Due date is required.</span>
+      }
+    </div>
+
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" (click)="cancel()">Cancel</button>
+      <button type="submit" [disabled]="submitting">
+        {{ isEditMode ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

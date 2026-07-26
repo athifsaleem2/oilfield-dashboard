@@ -4,12 +4,12 @@
     <a routerLink="/wells/new" class="btn-primary">+ Add Well</a>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
     <p>Loading wells...</p>
   }
 
-  @if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
   }
 
   <div class="well-map-frame">
@@ -28,7 +28,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (well of wells; track well.id) {
+      @for (well of wells(); track well.id) {
         <tr>
           <td>{{ well.name }}</td>
           <td>{{ well.location }}</td>

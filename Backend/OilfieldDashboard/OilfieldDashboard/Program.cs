@@ -2,6 +2,7 @@ using OilfieldDashboard.Application;
 using OilfieldDashboard.Infrastructure;
 using OilfieldDashboard.Infrastructure.Services;
 using OilfieldDashboard.Infrastructure.Hubs;
+using OilfieldDashboard.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddHostedService<SensorSimulatorService>();
 
 builder.Services.AddCors(options =>
@@ -26,6 +31,19 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        DbInitializer.Seed(dbContext);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DB Seed Warning: {ex.Message}");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

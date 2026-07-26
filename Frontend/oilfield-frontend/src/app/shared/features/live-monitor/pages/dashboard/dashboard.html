@@ -4,7 +4,7 @@
     <p>Real-time field operations overview</p>
   </header>
 
-  @if (wellIds.length === 0) {
+  @if (wellIds().length === 0) {
     <div class="waiting">
       <span class="pulse-dot"></span>
       Waiting for live sensor data...
@@ -12,11 +12,16 @@
   }
 
   <div class="well-grid">
-    @for (wellId of wellIds; track wellId) {
+    @for (wellId of wellIds(); track wellId) {
       <div class="well-card">
         <div class="well-card-header">
           <h3>Well #{{ wellId }}</h3>
-          <span class="live-badge"><span class="pulse-dot"></span>LIVE</span>
+          <div class="header-right">
+            @if (hasAlert(wellId)) {
+              <span class="alert-badge">⚠ ALERT</span>
+            }
+            <span class="live-badge"><span class="pulse-dot"></span>LIVE</span>
+          </div>
         </div>
 
         @if (latest(wellId); as reading) {

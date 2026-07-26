@@ -9,6 +9,7 @@ namespace OilfieldDashboard.Application.Interfaces
         DbSet<Well> Wells { get; }
         DbSet<WorkOrder> WorkOrders { get; }
         DbSet<SensorReading> SensorReadings { get; }
+        DbSet<Alert> Alerts { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
